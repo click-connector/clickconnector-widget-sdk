@@ -1,6 +1,4 @@
-Sure! Here's the formatted documentation for a README file in markdown format:
-
-# ClicKConnector ChatWidget SDK Library
+# ClickConnector ChatWidget SDK Library
 
 The `ChatWidget` class provides a set of static methods to interact with the ClickConnector widget. It handles the loading of the widget and offers various functionalities like appearance customization, user management, messaging, and more.
 
@@ -9,7 +7,7 @@ The `ChatWidget` class provides a set of static methods to interact with the Cli
 To install the ChatWidget library, run:
 
 ```sh
-npm install chat-widget
+npm i @clickconnector/widget-sdk
 ```
 
 ## Usage
@@ -258,64 +256,3 @@ The `ActivityData` interface defines the structure of the data used to log an ac
 
 - `type: string`
 - `data: { [key: string]: string }`
-
-## Example Usage
-
-```typescript
-import {
-  ChatWidget,
-  iLocalConversationMessage,
-  TicketData,
-  ActivityData,
-} from "chat-widget";
-
-// Load the widget
-ChatWidget.load("YOUR_WIDGET_ID").then(() => {
-  console.log("Widget loaded");
-});
-
-// Check if the widget is ready
-if (ChatWidget.isReady) {
-  // Set the theme color
-  ChatWidget.setThemeColor("#000000");
-
-  // Show the widget
-  ChatWidget.setWidgetVisibility(true);
-
-  // Set the user
-  ChatWidget.setUser({
-    name: "Thomas",
-    email: "thomas@gmail.com",
-    phone: "1234567890",
-  });
-
-  // Trigger an invite
-  ChatWidget.triggerInvite({
-    messages: [{ text: "Hey, how can I help you?" }],
-  });
-
-  // Trigger a campaign
-  ChatWidget.triggerCampaign({
-    message: "Check out our new features!",
-    userId: "user123",
-  });
-
-  // Create a ticket
-  const ticketData: TicketData = {
-    firstName: "Thomas",
-    email: "thomas@shelbyltd.com",
-    query: "I want to make a deal",
-    abc: "XYZ",
-  };
-  ChatWidget.createTicket(ticketData);
-
-  // Log an activity
-  const activityData: ActivityData = {
-    type: "CTA Clicked",
-    data: { package: "Premium" },
-  };
-  ChatWidget.logActivity(activityData);
-}
-```
-
-This documentation provides an overview of the `ChatWidget` class and its methods, helping developers understand how to integrate and use the ClickConnector widget in their applications. The typings for the parameters of `createTicket` and `logActivity` methods ensure type safety and better development experience.

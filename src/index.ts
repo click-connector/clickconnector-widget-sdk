@@ -30,7 +30,7 @@ export class ChatWidget {
 
     return new Promise((resolve) => {
       const checkInterval = setInterval(() => {
-        if (window.hasOwnProperty("ccWidget")) {
+        if (Object.prototype.hasOwnProperty.call(window, "ccWidget")) {
           clearInterval(checkInterval);
           this.isLoaded = true;
           this.events.emit("loaded");
