@@ -85,6 +85,21 @@ Sets the visibility of the widget.
 ChatWidget.setWidgetVisibility(true);
 ```
 
+#### `identify(user: { id?: string; firstName?: string; lastName?: string; primaryEmail?: string; primaryMobile?: string; }): void`
+
+Uniquely identify a user
+
+- **Parameters**:
+  - `user`: An object containing user details (`firstName`, `lastName`, `primaryEmail`).
+
+```typescript
+ChatWidget.identify({
+  id: "xxxxx", // Unique ID from your system
+  firstName: "Thomas",
+  email: "thomas@gmail.com",
+});
+```
+
 #### `setUser(user: { name: string; email: string; phone: string }): void`
 
 Sets the user information.

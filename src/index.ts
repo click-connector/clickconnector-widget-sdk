@@ -90,6 +90,25 @@ export class ChatWidget {
   }
 
   /**
+   * Uniquely identify the user
+   * @param user - An object containing user details (firstName,lastName, primaryEmail).
+   */
+  static identify(user: {
+    id?: string; // Unique identifier for the user from your system
+    firstName?: string;
+    lastName?: string;
+    primaryEmail?: string;
+    primaryMobile?: string;
+    company?: {
+      id?: string;
+      name: string;
+    };
+  }) {
+    if (!this._checkIfWidgetLoadedBefore()) return;
+    (window as any).ccWidget.identify(user);
+  }
+
+  /**
    * Sets the user information.
    * @param user - An object containing user details (name, email, phone).
    */
