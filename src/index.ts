@@ -201,6 +201,14 @@ export class ChatWidget {
   }
 
   /**
+   * Display currently active checklist items.
+   */
+  static showActiveChecklist() {
+    if (!this._checkIfWidgetLoadedBefore()) return;
+    (window as any).ccWidget.showActiveChecklist();
+  }
+
+  /**
    * Attaches a tour before showing a specific step.
    * @param stepNumber - The step number before which to attach the tour.
    * @param promise - A promise to be resolved before showing the step.
@@ -216,6 +224,14 @@ export class ChatWidget {
   static cancelTour() {
     if (!this._checkIfWidgetLoadedBefore()) return;
     (window as any).ccWidget.cancelTour();
+  }
+
+  /**
+   * Show Embeds - Show Knowledge base portals or trackers in a modal (popup)
+   */
+  static showEmbed(config: iEmbedConfig) {
+    if (!this._checkIfWidgetLoadedBefore()) return;
+    (window as any).ccWidget.showEmbed(config);
   }
 }
 
@@ -243,3 +259,30 @@ export interface ActivityData {
   type: string;
   data: { [key: string]: string };
 }
+
+interface iEmbedBase {
+  type: "KB" | "TRACKERS" | "NEWSFEED";
+  portalUrl: string;
+  isDarkMode?: boolean;
+}
+
+interface iKBEmbedConfig extends iEmbedBase {
+  type: "KB";
+  articleId?: string;
+}
+
+interface iTrackersEmbedConfig extends iEmbedBase {
+  type: "TRACKERS";
+  trackerId: string;
+  mode: "list" | "kanban";
+}
+
+interface iNewsfeedEmbedConfig extends iEmbedBase {
+  type: "NEWSFEED";
+  newsfeedId?: string;
+}
+
+export type iEmbedConfig =
+  | iKBEmbedConfig
+  | iTrackersEmbedConfig
+  | iNewsfeedEmbedConfig;
