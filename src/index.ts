@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { resolve } from "path";
 
 /**
  * Class representing the ChatWidget functionality.
@@ -7,6 +8,7 @@ export class ChatWidget {
   static widgetId: string;
   static isLoaded: boolean = false;
   static events = new EventEmitter();
+  static checkListEvents = new EventEmitter();
 
   /**
    * Loads the ClickConnector widget script asynchronously.
@@ -34,9 +36,10 @@ export class ChatWidget {
           clearInterval(checkInterval);
           this.isLoaded = true;
           this.events.emit("loaded");
+          this.onWidgetLoaded();
           resolve();
         }
-      }, 500);
+      }, 150);
     });
   }
 
@@ -49,10 +52,23 @@ export class ChatWidget {
       console.warn(
         "ClickConnector widget is not loaded yet; Action cannot be performed"
       );
+      console.warn(
+        "You can use 'ChatWidgetSDK.isReady' to check if the widget is loaded. Alternatively, you can simply use 'ChatWidgetSDK.onReady()' to wait before performing an action. Eg - ChatWidgetSDK.onReady().then((SDK)=> SDK.someAction())"
+      );
       return false;
     }
     return true;
   }
+
+  private static onWidgetLoaded = () => {
+    const onCheckListEvent = (eventName: string) => {
+      this.checkListEvents.emit(eventName);
+    };
+    ((window as any).ccWidget.events as EventEmitter).addListener(
+      "check-list-event",
+      onCheckListEvent
+    );
+  };
 
   /**
    * Getter to check if the widget is ready.
@@ -60,6 +76,31 @@ export class ChatWidget {
    */
   static get isReady(): boolean {
     return this.isLoaded;
+  }
+
+  /**
+   * Waits for the widget to be ready and resolves when it is loaded.
+   * On timeout, the promise is rejected with a timeout error.
+   *
+   * @returns A promise that resolves when the widget is loaded or rejects on timeout.
+   */
+  static onReady() {
+    return new Promise((res, rej) => {
+      if (this.isLoaded) {
+        res(this);
+      } else {
+        let hops = 0;
+        const timer = setInterval(() => {
+          hops++;
+          if (this.isReady) {
+            res(this);
+          } else if (hops > 20) {
+            clearInterval(timer);
+            rej("Timeout: Widget not loaded yet");
+          }
+        }, 200);
+      }
+    });
   }
 
   /**
