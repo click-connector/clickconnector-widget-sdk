@@ -79,12 +79,58 @@ export class ChatWidget {
   }
 
   /**
-   * Waits for the widget to be ready and resolves when it is loaded.
-   * On timeout, the promise is rejected with a timeout error.
+   * Waits for the widget to be fully loaded and initialized before executing further actions.
+   * This method is useful for ensuring that all SDK methods are called only after the widget is ready,
+   * preventing any errors or unexpected behavior that can arise from calling methods on an uninitialized widget.
    *
-   * @returns A promise that resolves when the widget is loaded or rejects on timeout.
+   * The method returns a promise that resolves when the widget is ready, or rejects if the widget fails to load within
+   * a specified timeout period. The default timeout is 4 seconds (20 checks with a 200ms interval).
+   *
+   * **Usage**:
+   * It is recommended to call SDK methods only after the widget is fully loaded to ensure proper functionality.
+   * You can use this method to safely chain other SDK method calls that rely on the widget being ready.
+   *
+   * **Example**:
+   * ```typescript
+   * ChatWidget.waitForWidgetReady()
+   *   .then(() => {
+   *     // The widget is now ready, you can safely call other methods
+   *     ChatWidget.startTour("tour123");
+   *   })
+   *   .catch((error) => {
+   *     // Handle any errors if the widget fails to load within the timeout
+   *     console.error("Widget failed to load:", error);
+   *   });
+   * ```
+   *
+   * **Returns**:
+   * - A promise that resolves when the widget is ready and loaded, or rejects with an error message if the timeout
+   *   is exceeded.
+   *
+   * **Notes**:
+   * - This method ensures that methods dependent on the widget’s initialization are only called once it is ready,
+   *   preventing any potential issues caused by calling methods too early.
+   * - It is highly recommended to use this method before calling other SDK functions like `startTour()`, `showEmbed()`,
+   *   or `showActiveChecklist()`.
+   * - The timeout duration is configurable if necessary.
+   *
+   * **Example with Timeout Handling**:
+   * ```typescript
+   * ChatWidget.waitForWidgetReady()
+   *   .then(() => {
+   *     // Now safe to call other SDK methods
+   *     ChatWidget.showEmbed({
+   *       type: "KB",
+   *       portalUrl: "https://example.com/kb"
+   *     });
+   *   })
+   *   .catch((error) => {
+   *     // Handle timeout or widget initialization failure
+   *     console.error("Widget loading timed out:", error);
+   *   });
+   * ```
    */
-  static onReady() {
+  static waitForWidgetReady() {
     return new Promise((res, rej) => {
       if (this.isLoaded) {
         res(this);
@@ -242,11 +288,20 @@ export class ChatWidget {
   }
 
   /**
-   * Display currently active checklist items.
+   * Display currently active checklist
    */
   static showActiveChecklist() {
     if (!this._checkIfWidgetLoadedBefore()) return;
     (window as any).ccWidget.showActiveChecklist();
+  }
+
+  /**
+   * Activates a checklist  with the provided id.
+   * @param checklistId - ID of the checklist
+   */
+  static activateChecklist(checkListId: string) {
+    if (!this._checkIfWidgetLoadedBefore()) return;
+    (window as any).ccWidget.activateCheckList(checkListId);
   }
 
   /**
@@ -268,11 +323,62 @@ export class ChatWidget {
   }
 
   /**
-   * Show Embeds - Show Knowledge base portals or trackers in a modal (popup)
+   * Displays a specified embed (Knowledge Base portal, Tracker, or Newsfeed) in a modal (popup) within the application.
+   * The content of the modal is determined by the provided configuration object, which specifies the type of embed
+   * and its associated parameters.
+   *
+   * This method allows you to display dynamic content such as a knowledge base article, a task tracker, or a newsfeed
+   * within a lightweight modal, without navigating away from the current page.
+   *
+   * **Parameters**:
+   *  - `config` (`iEmbedConfig`): The configuration object for the embed, which dictates the type of content to display
+   *    and any necessary settings for that content. The structure of this object varies depending on the type of embed.
+   *
+   * **Usage Notes**:
+   * - The `config` parameter must match one of the predefined embed types (`KB`, `TRACKERS`, or `NEWSFEED`).
+   * - Each embed type has specific required fields and optional properties, such as dark mode, article ID, or tracker mode.
+   *
+   * **Example**:
+   * ```typescript
+   * ChatWidget.showEmbed({
+   *   type: "KB",           // Type of embed - Knowledge Base
+   *   portalUrl: "https://example.com/kb", // URL of the Knowledge Base portal
+   *   articleId: "12345",   // Optional: ID of the article to display
+   *   isDarkMode: true      // Optional: Enable dark mode for the modal
+   * });
+   * ```
+   *
+   * **Supported Embed Types**:
+   * - **KB (Knowledge Base)**: Displays a Knowledge Base portal or specific article.
+   * - **TRACKERS**: Displays a tracker with tasks, in either "list" or "kanban" mode.
+   * - **NEWSFEED**: Displays a newsfeed or specific newsfeed post.
+   *
+   * **Return**: This function does not return any value.
+   *
+   * **Throws**: No explicit errors are thrown, but the widget must be loaded and initialized before calling this method.
    */
   static showEmbed(config: iEmbedConfig) {
     if (!this._checkIfWidgetLoadedBefore()) return;
     (window as any).ccWidget.showEmbed(config);
+  }
+
+  /**
+   * Adds the user to an email series with the given `sequenceId`.
+   * Optionally, you can force the addition using the `forceAdd` flag.
+   *
+   * **Parameters**:
+   * - `sequenceId`: The ID of the email sequence.
+   * - `forceAdd` (optional): If `true`, the user will be added even if there are restrictions (e.g., unsubscribed).
+   *
+   * **Example**:
+   * ```typescript
+   * ChatWidget.addToEmailSeries('sequence123'); // Add to sequence
+   * ChatWidget.addToEmailSeries('sequence123', true); // Force add
+   * ```
+   */
+  static addToEmailSeries(sequenceId: string, forceAdd?: boolean) {
+    if (!this._checkIfWidgetLoadedBefore()) return;
+    (window as any).ccWidget.addToEmailSeries(sequenceId, forceAdd);
   }
 }
 
