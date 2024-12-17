@@ -272,6 +272,7 @@ export class ChatWidget {
   /**
    * Logs an activity with the provided data.
    * @param data - An object containing activity details (type and key-value pairs).
+   * data.type is optional, You can use any valid string as type. Eg: CTA Clicked, Registration Completed, etc.
    */
   static logActivity(data: ActivityData) {
     if (!this._checkIfWidgetLoadedBefore()) return;
@@ -403,7 +404,7 @@ export interface TicketData {
  * Interface representing the data used to log an activity.
  */
 export interface ActivityData {
-  type: string;
+  type?: string; //
   data: { [key: string]: string };
 }
 
