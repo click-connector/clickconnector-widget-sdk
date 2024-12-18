@@ -164,7 +164,7 @@ export class ChatWidget {
    */
   static get isWidgetVisible(): boolean {
     if (!this._checkIfWidgetLoadedBefore()) return false;
-    return (window as any).ccWidget.isWidgetVisible();
+    return (window as any).ccWidget.isWidgetVisible;
   }
 
   /**
